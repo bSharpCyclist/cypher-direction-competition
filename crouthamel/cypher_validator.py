@@ -35,8 +35,8 @@ class CypherValidator:
 
     Attributes:
     _schema_pattern (str): A regex pattern for matching schema.
-    _left_node_pattern (str): A regex pattern for matching left node.
-    _right_node_pattern (str): A regex pattern for matching right node.
+    _node_pattern (str): A regex pattern for matching a node.
+    _relationship_pattern (str): A regex pattern for matching a relationship.
     _forward_relationship_pattern (str): A regex pattern for matching forward relationship.
     _backward_relationship_pattern (str): A regex pattern for matching backward relationship.
     _undirected_relationship_pattern (str): A regex pattern for matching undirected relationship.
@@ -50,16 +50,16 @@ class CypherValidator:
     """
     
     _schema_pattern = r'\(([^,]+),\s*([^,]+),\s*([^)]+)\)'
-    _left_node_pattern = r'\((\w*)?(?::([\w`:]+))?\s?(\{.*?\})?\)' # pattern is the same as below, but keep separate for now
-    _right_node_pattern = r'\((\w*)?(?::([\w`:]+))?\s?(\{.*?\})?\)'
-    
-    _forward_relationship_pattern = r'-\[?(\w+)?(?::)?([\w`*|!.]+)?\s*?(\{.*?\})?\]?->'  
-    _backward_relationship_pattern = r'<-\[?(\w+)?(?::)?([\w`*|!.]+)?\s*?(\{.*?\})?\]?-' 
-    _undirected_relationship_pattern = r'-\[?(\w+)?(?::)?([\w`*|!.]+)?\s*?(\{.*?\})?\]?-'
+    _node_pattern = r'\(([\w]+)?:?([\w`:]+)?\s?(\{.*?\})?\)'
+    _relationship_pattern = r'\[?([\w]+)?:?([\w`*|!.]+)?\s*?(\{.*?\})?\]?'
 
-    _forward_pattern = _left_node_pattern + _forward_relationship_pattern + _right_node_pattern
-    _backward_pattern = _left_node_pattern + _backward_relationship_pattern + _right_node_pattern
-    _undirected_pattern = _left_node_pattern + _undirected_relationship_pattern + _right_node_pattern
+    _forward_relationship_pattern = r'-' + _relationship_pattern + r'->'
+    _backward_relationship_pattern = r'<-' + _relationship_pattern + r'-'
+    _undirected_relationship_pattern = r'-' + _relationship_pattern + r'-'
+
+    _forward_pattern = _node_pattern + _forward_relationship_pattern + _node_pattern
+    _backward_pattern = _node_pattern + _backward_relationship_pattern + _node_pattern
+    _undirected_pattern = _node_pattern + _undirected_relationship_pattern + _node_pattern
 
     _patterns = [(_forward_pattern, '->'), (_backward_pattern, '<-'), (_undirected_pattern, '--')]
 
