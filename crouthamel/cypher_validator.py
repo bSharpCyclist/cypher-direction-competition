@@ -48,8 +48,8 @@ class CypherValidator:
     _parsed_schemas (List[Tuple[str, str, str]]): A list of parsed schemas.
     _variable_label_mapping (List[Tuple[str, str]]): A list of variable label mappings.
     """
-
-    _schema_pattern = r'\((.*),\s*(.*),\s*(.*)\)'
+    
+    _schema_pattern = r'\(([^,]+),\s*([^,]+),\s*([^)]+)\)'
     _left_node_pattern = r'\((\w*)?(?::([\w`:]+))?\s?(\{.*?\})?\)' # pattern is the same as below, but keep separate for now
     _right_node_pattern = r'\((\w*)?(?::([\w`:]+))?\s?(\{.*?\})?\)'
     
@@ -75,9 +75,6 @@ class CypherValidator:
         """
         Parses the input schema string to identify individual schema elements and store them as tuples.
         
-        The method uses regular expressions to find matches in the input `schema`. Each match is 
-        then converted into a tuple of stripped strings that represents individual elements of the schema.
-        
         These tuples are appended to the internal `_parsed_schemas` list.
         
         Parameters:
@@ -94,7 +91,7 @@ class CypherValidator:
         Modifies the internal `_parsed_schemas` list, appending tuples that represent the parsed elements
         of the schema.
         """
-        self._parsed_schemas = [tuple(map(str.strip, re.match(self._schema_pattern, s).groups())) for s in re.findall(r'\(.*?\)', schema)]
+        self._parsed_schemas = re.findall(self._schema_pattern, schema)
     
     def _parse_pattern(self, query: str) -> None:
         """
