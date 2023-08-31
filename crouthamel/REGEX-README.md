@@ -36,6 +36,8 @@ The regex matches a string that starts with an opening parenthesis, followed by 
 
 ```r'\[?([\w]+)?:?([\w`*|!.]+)?\s*?(\{.*?\})?\]?'```
 
+The regex matches a string that starts with an opening square bracket (which is optional), followed by an optional relationship variable, an optional relationship type, optional whitespace, optional relationship properties, and ends with a closing square bracket (which is optional).
+
 * ```\]?``` : Matches a closing square bracket character zero or one time. This is used to allow for an optional closing square bracket at the end of the relationship pattern.
 * ```([\w]+)?``` : Matches any word character (letters, digits, or underscores) one or more times and captures it in a group. This is used to capture the relationship variable, which is optional.
 * ```:?``` : Matches a colon character zero or one time. This is used to allow for an optional type after the relationship variable.
@@ -44,12 +46,12 @@ The regex matches a string that starts with an opening parenthesis, followed by 
 * ```(\{.*?\})?``` : Matches a string that starts with an opening brace character, followed by any characters (except for a newline character) zero or more times, and ends with a closing brace character. This is used to capture the relationship properties, which are optional.
 * ```\]?``` : Matches a closing square bracket character zero or one time. This is used to allow for an optional closing square bracket at the end of the relationship pattern.
 
- The regex matches a string that starts with an opening square bracket (which is optional), followed by an optional relationship variable, an optional relationship type, optional whitespace, optional relationship properties, and ends with a closing square bracket (which is optional).
+## Additional Info
 
- You'll notice the use of optional groups above. It allows me to assume that 9 elements will be captaured, and if they don't exist they will have a value of None. This allows for easy unpacking into the data class I used to capture the information.
+You'll notice the use of optional groups above. It allows me to assume that 9 elements will be captaured, and if they don't exist they will have a value of None. This allows for easy unpacking into the data class I used to capture the information.
 
- ``` 
- # Unpack the matched groups and create a new ParsedQuery instance 
- parsed_pattern = ParsedPattern(*match.groups(), direction, match.group(), query, PatternStatus.UNVALIDATED)
- ```
+``` 
+# Unpack the matched groups and create a new ParsedQuery instance 
+parsed_pattern = ParsedPattern(*match.groups(), direction, match.group(), query, PatternStatus.UNVALIDATED)
+```
 
