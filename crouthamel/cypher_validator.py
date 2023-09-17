@@ -130,6 +130,10 @@ class CypherValidator:
                     label = getattr(parsed_pattern, label_attr, None)
                     if label is not None:
                         setattr(parsed_pattern, label_attr, label.replace('`', ''))
+                        # *dcrouthamel - 09/2023 - Fix bug found by Tomaz.
+                        # If the relationship label has * at the end, or **, etc, keep only the part before the first *
+                        if label_attr == 'relationship_label':
+                            setattr(parsed_pattern, label_attr, label.split('*')[0])
 
                 # Append the new ParsedQuery instance to the results
                 self._parsed_patterns.append(parsed_pattern)
@@ -436,6 +440,11 @@ def test_examples_file(filename: str, write_out: bool = False, write_out_filenam
         examples.to_csv(write_out_filename, index=False)
 
 if __name__ == '__main__':
+    # 09/2023 - Example found by Tomaz that didn't work. Nice find!
+    schema = '(Organization, HAS_SUBSIDIARY, Organization)'
+    query = 'MATCH p=(o:Organization {name:"Blackstone"})-[:HAS_SUBSIDIARY*]->(t) WHERE NOT EXISTS {(t)-[:HAS_SUBSIDIARY]->()} RETURN max(length(p)) AS max'
+    test_single_query(schema, query)
+
     schema = '(Person, FOLLOWS, Person), (Person, ACTED_IN, Movie), (Person, REVIEWED, Movie), (Person, WROTE, Movie), (Person, DIRECTED, Movie), (Movie, IN_GENRE, Genre), (Person, RATED, Movie)'
     query = 'MATCH (a:Person:Actor) RETURN a, [(a)<-[:`ACTED_IN`]-(m) | m.title] AS movies'
     test_single_query(schema, query)
