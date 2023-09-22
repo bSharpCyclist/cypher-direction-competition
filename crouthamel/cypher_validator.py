@@ -129,11 +129,13 @@ class CypherValidator:
                 for label_attr in ['source_node_label', 'relationship_label', 'target_node_label']:
                     label = getattr(parsed_pattern, label_attr, None)
                     if label is not None:
-                        setattr(parsed_pattern, label_attr, label.replace('`', ''))
+                        label = label.replace('`', '')
+                        setattr(parsed_pattern, label_attr, label)
                         # *dcrouthamel - 09/2023 - Fix bug found by Tomaz.
                         # If the relationship label has * at the end, or **, etc, keep only the part before the first *
                         if label_attr == 'relationship_label':
-                            setattr(parsed_pattern, label_attr, label.split('*')[0])
+                            label = label.split('*')[0]
+                            setattr(parsed_pattern, label_attr, label)
 
                 # Append the new ParsedQuery instance to the results
                 self._parsed_patterns.append(parsed_pattern)
@@ -452,6 +454,12 @@ if __name__ == '__main__':
     # Test reversing --> to <-- (there wasn't an example of this in the test file, but it should work)
     schema = '(Person, KNOWS, Person), (Person, WORKS_AT, Organization)'
     query = 'MATCH (p1:Person)--(o:Organization)-->(p2:Person)'
+    test_single_query(schema, query)
+
+    schema = '(Person, FOLLOWS, Person), (Person, ACTED_IN, Movie), (Person, REVIEWED, Movie), (Person, WROTE, Movie), (Person, DIRECTED, Movie), (Movie, IN_GENRE, Genre), (Person, RATED, Movie)'
+    query = 'MATCH (p:Person)-[:`ACTED_IN`]->(m:Movie)<-[:DIRECTED]-(p) \
+            WHERE  p.born.year > 1960 \
+            RETURN p.name, p.born, labels(p), m.title'
     test_single_query(schema, query)
 
     test_examples_file('examples.csv')
